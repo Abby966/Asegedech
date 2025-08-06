@@ -1,0 +1,76 @@
+<!-- donate.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Donate - Old Age Home</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background: url('oldage.jpg') no-repeat center center fixed;
+      background-size: cover;
+    }
+    .donation-form {
+      max-width: 500px;
+      margin: auto;
+      margin-top: 60px;
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Old Age Home</a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="volunteer.html">Volunteer</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="donate.html">Donate</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container donation-form">
+    <h2 class="text-center">Make a Difference Today 💖</h2>
+    <p class="text-center">Your donation helps provide care, comfort, and joy to our beloved elders.</p>
+    <form id="donationForm">
+      <div class="form-group">
+        <label for="number">Telebirr Number</label>
+        <input type="text" class="form-control" id="number" required placeholder="09xxxxxxxx">
+      </div>
+      <div class="form-group">
+        <label for="amount">Donation Amount (ETB)</label>
+        <input type="number" class="form-control" id="amount" required>
+      </div>
+      <button type="submit" class="btn btn-success btn-block">Donate Now</button>
+    </form>
+    <div class="alert alert-success mt-4 d-none" id="thankYou">🎉 Thank you for your generosity! Confirmation will be sent via phone.</div>
+  </div>
+
+  <canvas id="confetti-canvas" style="position:fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none;"></canvas>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <script>
+    document.getElementById('donationForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      document.getElementById('thankYou').classList.remove('d-none');
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      this.reset();
+    });
+  </script>
+</body>
+</html>

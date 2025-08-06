@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Volunteer Page</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #eef2f7;
+      padding: 20px;
+      max-width: 700px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #34495e;
+    }
+    .task-item {
+      background: white;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 4px rgb(0 0 0 / 0.1);
+    }
+    label {
+      font-weight: 600;
+    }
+    .btn-submit {
+      margin-top: 15px;
+    }
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Volunteer for Tasks</h1>
+
+  <div id="taskContainer"></div>
+
+  <script>
+    // Fixed Ethiopian occasions - always available as tasks
+    const ethiopianOccasions = [
+      {
+        id: 'meskel',
+        title: "Celebrate Meskel",
+        description: "Ethiopian Orthodox Christian holiday on Sept 27",
+        maxVolunteers: 1,
+        fixed: true,
+        date: `${new Date().getFullYear()}-09-27`
+      },
+      {
+        id: 'newyear',
+        title: "Celebrate Ethiopian New Year",
+        description: "Enkutatash, celebrated on Sept 11",
+        maxVolunteers: 1,
+        fixed: true,
+        date: `${new Date().getFullYear()}-09-11`
+      },
+      {
+        id: 'eid',
+        title: "Celebrate Eid",
+        description: "Islamic festival celebrated by Ethiopian Muslims",
+        maxVolunteers: 1,
+        fixed: true
+        // Eid date varies, allow date select for this one
+      }
+    ];
+
+    // Load user-added tasks from localStorage
+    const userTasks = JSON.parse(localStorage.getItem('volunteerTasks')) || [];
+
+    // Combine fixed occasions + user tasks
+    const allTasks = [
+      ...ethiopianOccasions,
+      ...userTasks.map((task, i) => ({
+        id: task.title.toLowerCase().replace(/\s+/g, '-') + '-' + i,
+        title: task.title,
+        description: task.description,
+        maxVolunteers: task.maxVolunteers || null,
+        fixed: false
+      }))
+    ];
+
+    // Load volunteer appointments from localStorage
+    let volunteerAppointments = JSON.parse(localStorage.getItem('volunteerAppointments')) || {};
+
+    // Check if the whole day is booked for fixed occasion task
+    // For maxVol = 1, if any appointment exists on that date, consider fully booked (no more slots)
+    function isOccasionFullyBooked(task) {
+      if (!task.fixed) return false;
+      if (task.maxVolunteers !== 1) return false;
+
+      // Get all appointments for this task
+      const apps = volunteerAppointments[task.id] || [];
+      // If there is any appointment on the occasion date, it's fully booked
+      return apps.some(a => a.date === task.date);
+    }
+
+    const container = document.getElementById('taskContainer');
+
+    allTasks.forEach(task => {
+      // Skip occasion if fully booked for the whole day
+      if (task.fixed && isOccasionFullyBooked(task)) return;
+
+      const maxVol = task.maxVolunteers || 'Unlimited';
+
+      const div = document.createElement('div');
+      div.className = 'task-item';
+
+      // Date input properties for occasions
+      let dateInputHTML = '';
+      if (task.fixed && task.date) {
+        dateInputHTML = `
+          <input type="date" id="date-${task.id}" name="date" required value="${task.date}" min="${task.date}" readonly />
+        `;
+      } else {
+        dateInputHTML = `
+          <input type="date" id="date-${task.id}" name="date" required min="${new Date().toISOString().split('T')[0]}" />
+        `;
+      }
+
+      div.innerHTML = `
+        <h4>${task.title}</h4>
+        <p>${task.description}</p>
+        <p><strong>Max Volunteers:</strong> ${maxVol}</p>
+
+        <form data-taskid="${task.id}">
+          <div class="mb-2">
+            <label for="date-${task.id}">Select Date:</label><br />
+            ${dateInputHTML}
+          </div>
+
+          <div class="mb-2">
+            <label>Time Slot:</label><br />
+            <input type="time" id="startTime-${task.id}" name="startTime" required /> to
+            <input type="time" id="endTime-${task.id}" name="endTime" required />
+          </div>
+
+          <div class="mb-2">
+            <label for="phone-${task.id}">Phone Number:</label><br />
+            <input type="tel" id="phone-${task.id}" name="phone" placeholder="+251..." required pattern="\\+?\\d{9,15}" />
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-submit">Volunteer</button>
+        </form>
+
+        <div class="feedback text-danger mt-2" id="feedback-${task.id}"></div>
+      `;
+
+      container.appendChild(div);
+
+      // Form submission handler
+      const form = div.querySelector('form');
+      const feedbackEl = div.querySelector(`#feedback-${task.id}`);
+
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+
+        const date = form.date.value;
+        const startTime = form.startTime.value;
+        const endTime = form.endTime.value;
+        const phone = form.phone.value.trim();
+
+        if (!date || !startTime || !endTime || !phone) {
+          feedbackEl.textContent = "Please fill in all fields.";
+          return;
+        }
+
+        if (startTime >= endTime) {
+          feedbackEl.textContent = "End time must be after start time.";
+          return;
+        }
+
+        // Check max volunteers limit for this date/time
+        const appsForTask = volunteerAppointments[task.id] || [];
+        const overlapping = appsForTask.filter(app =>
+          app.date === date &&
+          app.startTime === startTime &&
+          app.endTime === endTime
+        ).length;
+
+        if (task.maxVolunteers && overlapping >= task.maxVolunteers) {
+          feedbackEl.textContent = "Sorry, the max number of volunteers for this slot is reached.";
+          return;
+        }
+
+        // Save appointment
+        if (!volunteerAppointments[task.id]) volunteerAppointments[task.id] = [];
+        volunteerAppointments[task.id].push({ date, startTime, endTime, phone });
+        localStorage.setItem('volunteerAppointments', JSON.stringify(volunteerAppointments));
+
+        feedbackEl.style.color = 'green';
+        feedbackEl.textContent = `Thank you for volunteering for "${task.title}" on ${date} from ${startTime} to ${endTime}.`;
+
+        form.reset();
+
+        // For fixed occasions with max 1 volunteer, hide the task after booking
+        if (task.fixed && task.maxVolunteers === 1) {
+          div.remove();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

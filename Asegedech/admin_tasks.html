@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Manage Volunteer Tasks</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Ethiopic:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f9fafb;
+            color: #1f2937;
+        }
+        .amharic {
+            font-family: 'Noto Serif Ethiopic', serif;
+        }
+        .nav-link {
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+        .nav-link:hover {
+            color: #f97316;
+            transform: scale(1.05);
+        }
+        .section {
+            scroll-margin-top: 80px;
+        }
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        .btn {
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            color: #ffffff !important; /* Ensure text is always white */
+            opacity: 1 !important; /* Prevent text from fading */
+        }
+        .btn:hover {
+            background-color: #ea580c;
+            transform: scale(1.05);
+            color: #ffffff !important; /* Maintain white text on hover */
+            opacity: 1 !important; /* Ensure text remains fully visible */
+        }
+        .task-appointments {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .modal {
+            background: rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal fixed inset-0 flex items-center justify-center z-50 animate__animated animate__fadeIn" style="display: none;">
+        <div class="bg-black p-6 rounded-lg shadow-lg max-w-md w-full animate__animated animate__zoomIn">
+            <h2 class="text-2xl font-bold text-center mb-4 text-white translate amharic" data-key="login_title">Admin Login</h2>
+            <form id="loginForm">
+                <div class="mb-4">
+                    <label class="block text-gray-200 mb-2 translate amharic" data-key="username_label">Username</label>
+                    <input type="text" id="username" class="w-full p-2 border rounded" placeholder="Enter username" required />
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-200 mb-2 translate amharic" data-key="password_label">Password</label>
+                    <input type="password" id="password" class="w-full p-2 border rounded" placeholder="Enter password" required />
+                </div>
+                <div id="errorMessage" class="text-red-500 text-sm mb-4 font-bold hidden translate amharic" data-key="login_error">Wrong username or password</div>
+                <button type="submit" class="btn bg-orange-500 text-white text-lg font-bold px-6 py-4 rounded-full w-full translate" data-key="login_button">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="adminNav" class="bg-white shadow-lg fixed w-full z-10 hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="text-2xl font-bold text-gray-800 translate" data-key="site_title">Asegedech AARO</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="index.html#home" class="nav-link text-gray-600 hover:text-orange-500 translate" data-key="nav_home">Home</a>
+                    <a href="AboutUs.html" class="nav-link text-gray-600 hover:text-orange-500 translate" data-key="nav_about">About Us</a>
+                    <a href="services.html" class="nav-link text-gray-600 hover:text-orange-500 translate" data-key="nav_services">Services</a>
+                    <a href="Donate.html" class="nav-link text-gray-600 hover:text-orange-500 translate" data-key="nav_donate">Donate</a>
+                    <a href="Volunteer.html" class="nav-link text-gray-600 hover:text-orange-500 translate" data-key="nav_volunteer">Volunteer</a>
+                    <a href="admin_tasks.html" class="nav-link text-gray-600 hover:text-orange-500 translate" data-key="nav_admin_tasks">Add Tasks</a>
+                    <a href="index.html#contact" class="nav-link text-gray-600 hover:text-orange-500 translate" data-key="nav_contact">Contact</a>
+                    <a href="index.html#gallery" class="nav-link text-gray-600 hover:text-orange-500 translate" data-key="nav_gallery">Gallery</a>
+                    <div class="relative">
+                        <button id="language-toggle" class="flex items-center text-gray-600 hover:text-orange-500">
+                            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAALCAIAAAD5gJpuAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAHzSURBVHjaYkxOP8IAB//+Mfz7w8Dwi4HhP5CcJb/n/7evb16/APL/gRFQDiAAw3JuAgAIBEDQ/iswEERjGzBQLEru97ll0g0+3HvqMn1SpqlqGsZMsZsIe0SICA5gt5a/AGIEarCPtFh+6N/ffwxA9OvP/7//QYwff/6fZahmePeB4dNHhi+fGb59Y4zyvHHmCEAAAW3YDzQYaJJ93a+vX79aVf58//69fvEPlpIfnz59+vDhw7t37968efP3b/SXL59OnjwIEEAsDP+YgY53b2b89++/awvLn98MDi2cVxl+/vl6mituCtBghi9f/v/48e/XL86krj9XzwEEEENy8g6gu22rfn78+NGs5Ofr16+ZC58+fvyYwX8rxOxXr169fPny+fPn1//93bJlBUAAsQADZMEBxj9/GBxb2P/9+S/R8u3vzxuyaX8ZHv3j8/YGms3w8ycQARmi2eE37t4ACCDGR4/uSkrKAS35B3TT////wADOgLOBIaXIyjBlwxKAAGKRXjCB0SOEaeu+/y9fMnz4AHQxCP348R/o+l+//sMZQBNLEvif3AcIIMZbty7Ly6t9ZmXl+fXj/38GoHH/UcGfP79//BBiYHjy9+8/oUkNAAHEwt1V/vI/KBY/QSISFqM/GBg+MzB8A6PfYC5EFiDAABqgW776MP0rAAAAAElFTkSuQmCC" alt="English" class="w-4 h-3 mr-1">
+                            <span class="translate" data-key="lang_english">English</span>
+                        </button>
+                        <div id="language-dropdown" class="hidden absolute bg-white shadow-md rounded mt-2">
+                            <a href="#" class="block px-4 py-2 text-gray-600 hover:bg-orange-100" data-lang="en">English</a>
+                            <a href="#" class="block px-4 py-2 text-gray-600 hover:bg-orange-100 amharic" data-lang="am">አማርኛ</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="sm:hidden">
+                    <button id="menu-toggle" class="text-gray-600 hover:text-orange-500 focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden sm:hidden bg-white shadow-lg">
+            <a href="index.html#home" class="block px-4 py-2 text-gray-600 hover:bg-orange-100 translate" data-key="nav_home">Home</a>
+            <a href="AboutUs.html" class="block px-4 py-2 text-gray-600 hover:bg-orange-100 translate" data-key="nav_about">About Us</a>
+            <a href="services.html" class="block px-4 py-2 text-gray-600 hover:bg-orange-100 translate" data-key="nav_services">Services</a>
+            <a href="Donate.html" class="block px-4 py-2 text-gray-600 hover:bg-orange-100 translate" data-key="nav_donate">Donate</a>
+            <a href="Volunteer.html" class="block px-4 py-2 text-gray-600 hover:bg-orange-100 translate" data-key="nav_volunteer">Volunteer</a>
+            <a href="admin_tasks.html" class="block px-4 py-2 text-gray-600 hover:bg-orange-100 translate" data-key="nav_admin_tasks">Add Tasks</a>
+            <a href="index.html#contact" class="block px-4 py-2 text-gray-600 hover:bg-orange-100 translate" data-key="nav_contact">Contact</a>
+            <a href="index.html#gallery" class="block px-4 py-2 text-gray-600 hover:bg-orange-100 translate" data-key="nav_gallery">Gallery</a>
+        </div>
+    </nav>
+
+    <!-- Admin Panel -->
+    <section id="adminPanel" class="py-16 section hidden">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 class="text-3xl font-bold text-center mb-12 animate__animated animate__fadeInUp translate amharic" data-key="admin_title">Admin Task Manager</h1>
+            <div class="card bg-white p-6 rounded-lg shadow-md animate__animated animate__fadeInUp">
+                <h4 class="text-xl font-semibold mb-4 translate amharic" data-key="admin_form_title">Add New Volunteer Task</h4>
+                <form id="adminTaskForm">
+                    <input type="text" id="taskTitle" class="w-full p-2 border rounded mb-4" placeholder="Task Title" required />
+                    <textarea id="taskDescription" class="w-full p-2 border rounded mb-4" placeholder="Task Description" rows="3"></textarea>
+                    <input type="number" id="taskMaxVol" class="w-full p-2 border rounded mb-4" placeholder="Max Volunteers (optional)" min="1" />
+                    <div class="mb-4">
+                        <label class="block text-gray-600 mb-2 translate amharic" data-key="available_days">Available Days</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label><input type="checkbox" name="days" value="Monday" class="mr-2"> Monday</label>
+                            <label><input type="checkbox" name="days" value="Tuesday" class="mr-2"> Tuesday</label>
+                            <label><input type="checkbox" name="days" value="Wednesday" class="mr-2"> Wednesday</label>
+                            <label><input type="checkbox" name="days" value="Thursday" class="mr-2"> Thursday</label>
+                            <label><input type="checkbox" name="days" value="Friday" class="mr-2"> Friday</label>
+                            <label><input type="checkbox" name="days" value="Saturday" class="mr-2"> Saturday</label>
+                            <label><input type="checkbox" name="days" value="Sunday" class="mr-2"> Sunday</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn bg-orange-500 text-white px-6 py-3 rounded-full w-full translate" data-key="add_task">Add Task</button>
+                </form>
+                <div class="task-list-admin mt-8">
+                    <h5 class="text-lg font-semibold mb-4 translate amharic" data-key="current_tasks">Current Tasks and Appointments</h5>
+                    <div id="adminTaskList"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="adminFooter" class="bg-gray-800 text-white py-8 hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <h4 class="text-lg font-semibold mb-2 translate amharic" data-key="footer_follow">Follow Us</h4>
+                    <div class="flex space-x-4">
+                        <a href="https://www.instagram.com/aregawiyian" target="_blank" class="text-white hover:text-orange-500"><span class="fa fa-2x fa-instagram"></span></a>
+                        <a href="https://www.facebook.com/%E1%8A%A0%E1%88%B0%E1%8C%88%E1%8B%B0%E1%89%BD-%E1%8A%A0%E1%88%A8%E1%8C%8B%E1%8B%8A%E1%8B%AB%E1%8A%95-%E1%88%98%E1%8C%A6%E1%8B%AA%E1%8B%AB-100537681481931/" target="_blank" class="text-white hover:text-orange-500"><span class="fa fa-2x fa-facebook"></span></a>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <p class="translate amharic" data-key="footer_copyright">Copyright &copy; 2025 Asegedech Asfaw Aged Aid & Rehabilitation Organization</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script>
+        // Translation data
+        const translations = {
+            en: {
+                site_title: "Asegedech AARO",
+                nav_home: "Home",
+                nav_about: "About Us",
+                nav_services: "Services",
+                nav_donate: "Donate",
+                nav_volunteer: "Volunteer",
+                nav_admin_tasks: "Add Tasks",
+                nav_contact: "Contact",
+                nav_gallery: "Gallery",
+                lang_english: "English",
+                admin_title: "Admin Task Manager",
+                admin_form_title: "Add New Volunteer Task",
+                available_days: "Available Days",
+                add_task: "Add Task",
+                current_tasks: "Current Tasks and Appointments",
+                footer_follow: "Follow Us",
+                footer_copyright: "Copyright &copy; 2025 Asegedech Asfaw Aged Aid & Rehabilitation Organization",
+                login_title: "Admin Login",
+                username_label: "Username",
+                password_label: "Password",
+                login_button: "Login",
+                login_error: "Wrong username or password",
+                date_label: "Date",
+                time_label: "Time",
+                phone_label: "Phone",
+                days_label: "Available Days",
+                delete_task: "Delete"
+            },
+            am: {
+                site_title: "አሰገደች አረጋዊያን እንክብካቤ",
+                nav_home: "መነሻ",
+                nav_about: "ስለ እኛ",
+                nav_services: "አገልግሎቶች",
+                nav_donate: "መዋጮ",
+                nav_volunteer: "በጎ ፈቃደኛ",
+                nav_admin_tasks: "ተግባራት ጨምር",
+                nav_contact: "ያግኙን",
+                nav_gallery: "ጋለሪ",
+                lang_english: "እንግሊዝኛ",
+                admin_title: "የአስተዳዳሪ ተግባር አስተዳደር",
+                admin_form_title: "አዲስ የበጎ ፈቃደኛ ተግባር ጨምር",
+                available_days: "የሚገኙ ቀናት",
+                add_task: "ተግባር ጨምር",
+                current_tasks: "አሁን ያሉ ተግባራት እና ቀጠሮዎች",
+                footer_follow: "ተከተሉን",
+                footer_copyright: "የቅጂ መብት &copy; 2025 አሰገደች አስፋው የአረጋዊያን እርዳታ እና መልሶ ማቋቋሚያ ድርጅት",
+                login_title: "የአስተዳዳሪ መግቢያ",
+                username_label: "የተጠቃሚ ስም",
+                password_label: "የይለፍ ቃል",
+                login_button: "ግባ",
+                login_error: "የተሳሳተ የተጠቃሚ ስም ወይም የይለፍ ቃል",
+                date_label: "ቀን",
+                time_label: "ሰዓት",
+                phone_label: "ስልክ",
+                days_label: "የሚገኙ ቀናት",
+                delete_task: "ሰርዝ"
+            }
+        };
+
+        // Authentication Logic
+        const loginModal = document.getElementById('loginModal');
+        const loginForm = document.getElementById('loginForm');
+        const adminNav = document.getElementById('adminNav');
+        const adminPanel = document.getElementById('adminPanel');
+        const adminFooter = document.getElementById('adminFooter');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Check if already logged in
+        if (localStorage.getItem('isAdmin')) {
+            loginModal.style.display = 'none';
+            adminNav.classList.remove('hidden');
+            adminPanel.classList.remove('hidden');
+            adminFooter.classList.remove('hidden');
+        } else {
+            loginModal.style.display = 'flex';
+        }
+
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            if (username === 'abby' && password === '01031621') {
+                localStorage.setItem('isAdmin', 'true');
+                loginModal.style.display = 'none';
+                adminNav.classList.remove('hidden');
+                adminPanel.classList.remove('hidden');
+                adminFooter.classList.remove('hidden');
+                errorMessage.classList.add('hidden');
+                renderAdminTasks();
+            } else {
+                errorMessage.classList.remove('hidden');
+            }
+        });
+
+        // Language toggle functionality
+        function setLanguage(lang) {
+            document.querySelectorAll('.translate').forEach(element => {
+                const key = element.getAttribute('data-key');
+                if (translations[lang][key]) {
+                    element.innerHTML = translations[lang][key];
+                }
+            });
+            document.getElementById('language-toggle').innerHTML = `
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAALCAIAAAD5gJpuAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAHzSURBVHjaYkxOP8IAB//+Mfz7w8Dwi4HhP5CcJb/n/7evb16/APL/gRFQDiAAw3JuAgAIBEDQ/iswEERjGzBQLEru97ll0g0+3HvqMn1SpqlqGsZMsZsIe0SICA5gt5a/AGIEarCPtFh+6N/ffwxA9OvP/7//QYwff/6fZahmePeB4dNHhi+fGb59Y4zyvHHmCEAAAW3YDzQYaJJ93a+vX79aVf58//69fvEPlpIfnz59+vDhw7t37968efP3b/SXL59OnjwIEEAsDP+YgY53b2b89++/awvLn98MDi2cVxl+/vl6mituCtBghi9f/v/48e/XL86krj9XzwEEEENy8g6gu22rfn78+NGs5Ofr16+ZC58+fvyYwX8rxOxXr169fPny+fPn1//93bJlBUAAsQADZMEBxj9/GBxb2P/9+S/R8u3vzxuyaX8ZHv3j8/YGms3w8ycQARmi2eE37t4ACCDGR4/uSkrKAS35B3TT////wADOgLOBIaXIyjBlwxKAAGKRXjCB0SOEaeu+/y9fMnz4AHQxCP348R/o+l+//sMZQBNLEvif3AcIIMZbty7Ly6t9ZmXl+fXj/38GoHH/UcGfP79//BBiYHjy9+8/oUkNAAHEwt1V/vI/KBY/QSISFqM/GBg+MzB8A6PfYC5EFiDAABqgW776MP0rAAAAAElFTkSuQmCC" alt="Language" class="w-4 h-3 mr-1">
+                ${lang === 'en' ? 'English' : 'አማርኛ'}
+            `;
+        }
+
+        // Initialize language
+        setLanguage('en');
+
+        // Language dropdown toggle
+        document.getElementById('language-toggle').addEventListener('click', () => {
+            document.getElementById('language-dropdown').classList.toggle('hidden');
+        });
+
+        // Language selection
+        document.querySelectorAll('#language-dropdown a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const lang = e.target.getAttribute('data-lang');
+                setLanguage(lang);
+                document.getElementById('language-dropdown').classList.add('hidden');
+            });
+        });
+
+        // Mobile menu toggle
+        document.getElementById('menu-toggle').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+
+        // Admin Task Management
+        let tasks = JSON.parse(localStorage.getItem('volunteerTasks')) || [
+            {
+                id: 'meskel',
+                title: "Celebrate Meskel",
+                description: "Ethiopian Orthodox Christian holiday on Sept 27",
+                maxVolunteers: 1,
+                days: ["Friday"],
+            },
+            {
+                id: 'newyear',
+                title: "Celebrate Ethiopian New Year",
+                description: "Enkutatash, celebrated on Sept 11",
+                maxVolunteers: 1,
+                days: ["Wednesday"],
+            },
+            {
+                id: 'eid',
+                title: "Celebrate Eid",
+                description: "Islamic festival celebrated by Ethiopian Muslims",
+                maxVolunteers: 1,
+                days: ["Monday"],
+            }
+        ];
+        let volunteerAppointments = JSON.parse(localStorage.getItem('volunteerAppointments')) || {};
+
+        function getAllTasks() {
+            return tasks.map((task, i) => ({
+                id: task.id || task.title.toLowerCase().replace(/\s+/g, '-') + '-' + i,
+                title: task.title,
+                description: task.description,
+                maxVolunteers: task.maxVolunteers || null,
+                days: task.days || []
+            }));
+        }
+
+        const adminTaskForm = document.getElementById('adminTaskForm');
+        const adminTaskList = document.getElementById('adminTaskList');
+
+        function renderAdminTasks() {
+            adminTaskList.innerHTML = '';
+            const allTasks = getAllTasks();
+
+            allTasks.forEach(task => {
+                const div = document.createElement('div');
+                div.className = 'card bg-white p-6 rounded-lg shadow-md mb-4';
+                const maxVol = task.maxVolunteers || 'Unlimited';
+                const days = task.days && task.days.length > 0 ? task.days.join(', ') : 'No days specified';
+                const appointments = volunteerAppointments[task.id] || [];
+                let apptHTML = appointments.length === 0
+                    ? '<em class="text-gray-500">No appointments yet</em>'
+                    : appointments.map(a =>
+                        `<div class="border-b border-gray-200 py-2">
+                            <strong class="translate amharic" data-key="date_label">Date:</strong> ${a.date}, 
+                            <strong class="translate amharic" data-key="time_label">Time:</strong> ${a.startTime} - ${a.endTime}, 
+                            <strong class="translate amharic" data-key="phone_label">Phone:</strong> ${a.phone}
+                        </div>`
+                    ).join('');
+
+                div.innerHTML = `
+                    <h5 class="text-lg font-semibold mb-2">${task.title} (${maxVol} max volunteers)</h5>
+                    <p class="text-gray-600 mb-2">${task.description}</p>
+                    <p class="text-gray-600 mb-2"><strong class="translate amharic" data-key="days_label">Available Days:</strong> ${days}</p>
+                    <div class="task-appointments border rounded p-2">${apptHTML}</div>
+                    <button class="btn bg-red-500 text-white px-4 py-2 rounded mt-4 translate" data-key="delete_task" onclick="deleteTask('${task.id}')">Delete</button>
+                `;
+                adminTaskList.appendChild(div);
+            });
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            localStorage.setItem('volunteerTasks', JSON.stringify(tasks));
+            renderAdminTasks();
+        }
+
+        adminTaskForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const title = document.getElementById('taskTitle').value.trim();
+            const description = document.getElementById('taskDescription').value.trim();
+            let maxVol = parseInt(document.getElementById('taskMaxVol').value) || null;
+            const days = Array.from(document.querySelectorAll('input[name="days"]:checked')).map(input => input.value);
+            const id = title.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now();
+
+            if (title && description) {
+                tasks.push({ id, title, description, maxVolunteers: maxVol, days });
+                localStorage.setItem('volunteerTasks', JSON.stringify(tasks));
+                renderAdminTasks();
+                adminTaskForm.reset();
+            }
+        });
+
+        // Only render tasks if authenticated
+        if (localStorage.getItem('isAdmin')) {
+            renderAdminTasks();
+        }
+    </script>
+</body>
+</html>
