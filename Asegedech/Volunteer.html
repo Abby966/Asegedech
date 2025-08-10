@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Volunteer – Aged Care & Dignity Center</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body{background:#f6f8fb}
+    .shadow-soft{box-shadow:0 10px 30px rgba(15,23,42,.06)}
+    .brand{color:#ea580c}
+    .task-item{background:#fff;border-radius:16px;padding:16px;margin-bottom:14px}
+    .pill{display:inline-flex;align-items:center;gap:.5rem;background:#fff6f0;color:#9a3412;border:1px solid #ffe3d0;border-radius:999px;padding:.25rem .75rem;font-weight:600}
+    .hero{background:linear-gradient(135deg,#fff3e6,#fff);border:1px solid #ffe1c4}
+    .max-w{max-width:900px}
+  </style>
+</head>
+<body>
+  <!-- NAV -->
+  <nav class="navbar navbar-expand-lg bg-white sticky-top border-bottom shadow-soft">
+    <div class="container">
+      <a class="navbar-brand fw-semibold" href="index.html">
+        <i class="fa-solid fa-hands-holding-heart brand me-2"></i>Aged Care & Dignity Center
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="nav">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="index.html#Home">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.html#services">Services</a></li>
+          <li class="nav-item"><a class="nav-link" href="services.html">More Services</a></li>
+          <li class="nav-item"><a class="nav-link active fw-semibold" aria-current="page" href="Volunteer.html">Volunteer</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.html#contact">Contact</a></li>
+          <li class="nav-item ms-lg-2"><a class="btn btn-sm btn-warning text-white" href="Donate.html"><i class="fa-solid fa-heart me-1"></i>Donate</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="py-4 py-md-5">
+    <div class="container max-w">
+      <div class="p-4 p-md-5 rounded-4 hero shadow-soft">
+        <span class="pill"><i class="fa-solid fa-people-carry-box"></i> Volunteer Program</span>
+        <h1 class="mt-2 mb-2 fw-bold">Give a morning. Change a day.</h1>
+        <p class="mb-0 text-secondary">Pick a task, choose a date & time, and leave your phone. We’ll confirm by SMS/Telegram.</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="container max-w">
+    <div class="row g-4 align-items-start">
+      <div class="col-12 col-lg-7">
+        <h2 class="h4 mb-3">Available Tasks</h2>
+        <div id="taskContainer"></div>
+      </div>
+      <div class="col-12 col-lg-5">
+        <div class="p-3 p-md-4 bg-white rounded-4 shadow-soft">
+          <h3 class="h5">My Appointments</h3>
+          <p class="text-secondary small">Saved on this device only.</p>
+          <div id="myAppointments" class="mt-2"></div>
+          <button id="clearAppointments" class="btn btn-outline-danger btn-sm mt-2">
+            <i class="fa-solid fa-trash-can me-1"></i>Clear All
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="toast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body"><i class="fa-solid fa-circle-check me-2"></i><span id="toastMsg">Saved.</span></div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="py-5 text-center text-secondary small">© <span id="year"></span> Aged Care & Dignity Center</footer>
+
+  <script>
+    // --- Helpers ---
+    const storage = {
+      get(key, fallback){ try { return JSON.parse(localStorage.getItem(key)) ?? fallback } catch { return fallback } },
+      set(key, val){ localStorage.setItem(key, JSON.stringify(val)) }
+    };
+
+    const year = new Date().getFullYear();
+    // Preloaded fixed occasions
+    const ethiopianOccasions = [
+      { id: 'meskel',  title: 'Celebrate Meskel', description: 'Ethiopian Orthodox holiday on Sept 27', maxVolunteers: 1, fixed: true, date: `${year}-09-27` },
+      { id: 'newyear', title: 'Celebrate Ethiopian New Year', description: 'Enkutatash on Sept 11', maxVolunteers: 1, fixed: true, date: `${year}-09-11` },
+      { id: 'eid',     title: 'Celebrate Eid', description: 'Eid date varies — choose the day', maxVolunteers: 1, fixed: true }
+    ];
+
+    // Admin-defined tasks (populated by your admin page, e.g., admin_tasks.html)
+    const adminTasks = storage.get('adminTasks', []); // [{title, description, maxVolunteers}, ...]
+
+    // Build combined task list
+    const allTasks = [
+      ...ethiopianOccasions,
+      ...adminTasks.map((t,i)=>({
+        id: `admin-${t.title.toLowerCase().replace(/\\s+/g,'-')}-${i}`,
+        title: t.title,
+        description: t.description,
+        maxVolunteers: t.maxVolunteers || null,
+        fixed: false
+      }))
+    ];
+
+    let appointments = storage.get('volunteerAppointments', {}); // { taskId: [{date, startTime, endTime, phone}, ...], ... }
+
+    function timeOverlap(s1,e1,s2,e2){ return (s1 < e2 && s2 < e1); }
+
+    function showToast(msg){
+      document.getElementById('toastMsg').textContent = msg;
+      new bootstrap.Toast(document.getElementById('toast'), { delay: 2500 }).show();
+    }
+
+    function renderTasks(){
+      const container = document.getElementById('taskContainer');
+      container.innerHTML = '';
+
+      const today = new Date().toISOString().split('T')[0];
+
+      allTasks.forEach(task => {
+        const apps = appointments[task.id] || [];
+        const capacity = task.maxVolunteers || Infinity;
+
+        // If a fixed single-volunteer occasion is already booked for that date, skip
+        const fullForDay = task.fixed && task.date && apps.filter(a => a.date === task.date).length >= capacity;
+        if(fullForDay) return;
+
+        const card = document.createElement('div');
+        card.className = 'task-item shadow-soft';
+
+        const dateInput = task.fixed && task.date
+          ? `<input class="form-control" type="date" name="date" required value="${task.date}" min="${task.date}" readonly />`
+          : `<input class="form-control" type="date" name="date" required min="${today}" />`;
+
+        card.innerHTML = `
+          <div class="d-flex align-items-start justify-content-between">
+            <div>
+              <h4 class="h5 mb-1">${task.title}</h4>
+              <p class="text-secondary mb-2">${task.description}</p>
+              <span class="badge text-bg-light border"><strong>Max Volunteers:</strong> ${task.maxVolunteers || 'Unlimited'}</span>
+            </div>
+          </div>
+          <form class="mt-3" data-taskid="${task.id}">
+            <div class="row g-2">
+              <div class="col-12 col-md-4">
+                <label class="form-label">Date</label>
+                ${dateInput}
+              </div>
+              <div class="col-6 col-md-4">
+                <label class="form-label">Start</label>
+                <input class="form-control" type="time" name="startTime" required />
+              </div>
+              <div class="col-6 col-md-4">
+                <label class="form-label">End</label>
+                <input class="form-control" type="time" name="endTime" required />
+              </div>
+              <div class="col-12">
+                <label class="form-label">Phone</label>
+                <input class="form-control" name="phone" placeholder="+251..." required pattern="\\+?\\d{9,15}" />
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">
+              <i class="fa-solid fa-hand-holding-heart me-1"></i>Volunteer
+            </button>
+            <div class="form-text text-danger mt-2 feedback"></div>
+          </form>
+          <div class="mt-3 small text-secondary">Existing bookings for this task: <span class="fw-semibold">${apps.length}</span></div>
+        `;
+
+        const form = card.querySelector('form');
+        const feedback = card.querySelector('.feedback');
+        form.addEventListener('submit', (e)=>{
+          e.preventDefault();
+          feedback.textContent = '';
+
+          const fd = new FormData(form);
+          const date = fd.get('date');
+          const st = fd.get('startTime');
+          const en = fd.get('endTime');
+          const phone = (fd.get('phone')||'').trim();
+
+          if(!date || !st || !en || !phone){ feedback.textContent = 'Please fill in all fields.'; return; }
+          if(st >= en){ feedback.textContent = 'End time must be after start time.'; return; }
+
+          const list = appointments[task.id] || [];
+          const cap = task.maxVolunteers || Infinity;
+
+          // capacity per overlapping slot
+          const numOverlapping = list.filter(a => a.date === date && timeOverlap(a.startTime, a.endTime, st, en)).length;
+          if(numOverlapping >= cap){ feedback.textContent = 'That time slot is full. Please choose another time.'; return; }
+
+          list.push({ date, startTime: st, endTime: en, phone });
+          appointments[task.id] = list;
+          storage.set('volunteerAppointments', appointments);
+
+          form.reset();
+          showToast(`Booked “${task.title}” on ${date} from ${st} to ${en}.`);
+          renderAppointments();
+          // If fixed, single-slot by day and date is set, hide when booked
+          if(task.fixed && task.maxVolunteers === 1 && task.date){
+            const countForDay = list.filter(a=>a.date===task.date).length;
+            if(countForDay >= 1) card.remove();
+          }
+        });
+
+        container.appendChild(card);
+      });
+    }
+
+    function renderAppointments(){
+      const wrap = document.getElementById('myAppointments');
+      wrap.innerHTML = '';
+      const entries = [];
+      Object.entries(appointments).forEach(([taskId, apps])=>{
+        apps.forEach(a => entries.push({ taskId, ...a }));
+      });
+      if(entries.length === 0){
+        wrap.innerHTML = '<p class="text-secondary">No appointments yet.</p>';
+        return;
+      }
+      entries.sort((a,b)=> (a.date+b.startTime).localeCompare(b.date+b.startTime));
+      const list = document.createElement('div');
+      list.className = 'list-group';
+      entries.forEach((e, idx)=>{
+        const item = document.createElement('div');
+        item.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
+        const title = (allTasks.find(t=>t.id===e.taskId)||{}).title || 'Task';
+        item.innerHTML = `
+          <div>
+            <div class="fw-semibold">${title}</div>
+            <div class="small text-secondary">${e.date} • ${e.startTime}–${e.endTime}</div>
+            <div class="small">${e.phone}</div>
+          </div>
+          <button class="btn btn-sm btn-outline-secondary" data-idx="${idx}">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        `;
+        item.querySelector('button').addEventListener('click', ()=>{
+          // remove selected entry by rebuilding structure
+          let i = -1;
+          Object.keys(appointments).forEach(k=>{
+            appointments[k] = appointments[k].filter(a=>{ i += 1; return i !== idx; });
+            if(appointments[k].length === 0) delete appointments[k];
+          });
+          storage.set('volunteerAppointments', appointments);
+          renderAppointments();
+          renderTasks();
+        });
+        list.appendChild(item);
+      });
+      wrap.appendChild(list);
+    }
+
+    // Clear all appointments
+    document.getElementById('clearAppointments').addEventListener('click', ()=>{
+      if(confirm('Clear all saved appointments on this device?')){
+        localStorage.removeItem('volunteerAppointments');
+        location.reload();
+      }
+    });
+
+    // Boot
+    document.getElementById('year').textContent = new Date().getFullYear();
+    renderTasks();
+    renderAppointments();
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
