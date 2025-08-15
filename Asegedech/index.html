@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aged Care & Dignity Center</title>
+  <!-- Tailwind (CDN build) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50:'#fff7ed',100:'#ffedd5',200:'#fed7aa',300:'#fdba74',400:'#fb923c',
+              500:'#f97316',600:'#ea580c',700:'#c2410c',800:'#9a3412',900:'#7c2d12'
+            }
+          },
+          fontFamily: {
+            display: ['"Segoe UI"', 'Inter', 'system-ui', 'sans-serif'],
+            body: ['Inter', 'system-ui', 'sans-serif']
+          },
+          boxShadow: { soft: '0 10px 30px rgb(2 6 23 / 0.06)' }
+        }
+      }
+    }
+  </script>
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- AOS for scroll animations -->
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <style>
+    .glass{backdrop-filter:blur(10px);background:linear-gradient(90deg, rgba(255,255,255,.86), rgba(255,255,255,.76))}
+    .fade-up{transform:translateY(18px);opacity:0;transition:all .6s ease}
+    .fade-up.in-view{transform:translateY(0);opacity:1}
+    .balancer{text-wrap:balance}
+    html{scroll-behavior:smooth}
+  </style>
+</head>
+<body class="font-body text-slate-800 bg-slate-50">
+  <!-- ================= NAV ================= -->
+  <header class="fixed inset-x-0 top-0 z-50">
+    <nav class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="mt-4 mb-3 flex items-center justify-between rounded-2xl bg-white/90 glass shadow-soft px-4 py-2">
+        <a href="#home" class="flex items-center gap-3 group">
+          <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500 text-white shadow-soft">
+            <i class="fa-solid fa-hands-holding-heart"></i>
+          </span>
+          <span class="font-semibold tracking-tight text-slate-900 group-hover:text-brand-600 transition">
+            Aged Care & Dignity Center
+          </span>
+        </a>
+        <button id="mobileBtn" class="md:hidden inline-flex items-center justify-center rounded-xl p-2 hover:bg-slate-100">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <ul id="navMenu" class="hidden md:flex items-center gap-6 text-sm">
+          <li><a class="hover:text-orange-600" href="#services" data-i18n="nav.services">Services</a></li>
+          <li><a class="hover:text-orange-600" href="#impact" data-i18n="nav.impact">Impact</a></li>
+          <li><a class="hover:text-orange-600" href="#gallery" data-i18n="nav.gallery">Gallery</a></li>
+          <li><a class="hover:text-orange-600" href="Volunteer.html" data-i18n="nav.volunteer">Volunteer</a></li>
+          <li><a class="hover:text-orange-600" href="#contact" data-i18n="nav.contact">Contact</a></li>
+          <li>
+            <a class="rounded-full bg-orange-500 px-4 py-2 text-white hover:bg-orange-600"
+               href="#donate" data-i18n="nav.donate">Donate</a>
+          </li>
+          <!-- Admin (desktop) -->
+         <!-- Desktop -->
+         <li><a class="hover:text-orange-600" href="http://127.0.0.1:5000/admin_tasks.html?logout=1">Admin</a></li>
+
+
+          <!-- Language switcher -->
+          <li class="relative">
+            <button id="langBtn"
+                    class="inline-flex items-center gap-1 rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold hover:bg-slate-50">
+              <span id="langLabel">EN</span>
+              <i class="fa-solid fa-chevron-down text-[10px]"></i>
+            </button>
+            <div id="langMenu"
+                 class="absolute right-0 mt-2 hidden min-w-[140px] overflow-hidden rounded-xl bg-white shadow-soft ring-1 ring-slate-200">
+              <button data-lang="en" class="block w-full px-3 py-2 text-left text-sm hover:bg-slate-50">English</button>
+              <button data-lang="am" class="block w-full px-3 py-2 text-left text-sm hover:bg-slate-50">አማርኛ</button>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <!-- Mobile menu -->
+      <div id="mobileMenu" class="md:hidden hidden rounded-2xl bg-white shadow-soft px-4 py-3">
+        <a class="block py-2 hover:text-brand-600" href="#services">Services</a>
+        <a class="block py-2 hover:text-brand-600" href="#impact">Impact</a>
+        <a class="block py-2 hover:text-brand-600" href="#gallery">Gallery</a>
+        <a class="block py-2 hover:text-brand-600" href="Volunteer.html">Volunteer</a>
+        <a class="block py-2 hover:text-brand-600" href="#contact">Contact</a>
+        <a class="block py-2 hover:text-brand-600" href="#donate">Donate</a>
+        <!-- Admin (mobile) -->
+        <a class="block py-2 hover:text-brand-600" href="http://127.0.0.1:5000/admin_tasks.html?logout=1">Admin</a>
+
+
+      </div>
+    </nav>
+  </header>
+
+  <!-- ================= HERO ================= -->
+  <section id="home" class="relative isolate min-h-[88vh] grid place-items-center overflow-hidden pt-28">
+    <img src="oldage.jpg" alt="Care with dignity" class="absolute inset-0 h-full w-full object-cover" />
+    <div class="absolute inset-0 bg-slate-900/60"></div>
+    <div class="relative z-10 mx-auto max-w-5xl px-6 text-center text-white" data-aos="fade-up">
+      <h1 class="font-display text-4xl md:text-6xl font-extrabold leading-tight balancer">
+        Warm care, safe living, and a joyful community for our elders.
+      </h1>
+      <p class="mt-4 text-lg md:text-xl opacity-90 balancer">
+        We provide shelter, meals, medical support, and companionship so every elder experiences dignity and love every day.
+      </p>
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <a href="#donate" class="rounded-full bg-brand-500 px-6 py-3 text-white shadow-soft hover:bg-brand-600">Donate Now</a>
+        <a href="#volunteer" class="rounded-full bg-white/10 px-6 py-3 text-white ring-1 ring-white/30 hover:bg-white/20">Become a Volunteer</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SERVICES ================= -->
+  <section id="services" class="relative z-10 pt-24 pb-16 md:pt-28 md:pb-24">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="mx-auto max-w-2xl text-center" data-aos="fade-up">
+        <h2 class="font-display text-3xl md:text-4xl font-extrabold tracking-tight">What We Do</h2>
+        <p class="mt-3 text-slate-600">Holistic elder care that covers daily life, health, and belonging.</p>
+      </div>
+
+      <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <!-- Shelter Aid -->
+        <article class="rounded-3xl bg-white p-6 shadow-soft transition hover:-translate-y-1 hover:shadow-xl" data-aos="fade-up" data-aos-delay="50">
+          <img class="h-44 w-full rounded-2xl object-cover" src="http://www.asegedechaged.com/wp-content/uploads/2019/12/smallshelter.jpg" alt="Shelter" />
+          <h3 class="mt-4 font-semibold text-lg">Shelter Aid</h3>
+          <p class="mt-2 text-sm text-slate-600">
+            In our facility <span class="font-semibold">91 elders</span> (<span class="font-medium">66 male</span> and <span class="font-medium">25 female</span>)
+            are receiving full shelter and clothing aid. Beneficiaries also receive personal cleaning materials.
+          </p>
+          <a href="services.html#shelter" class="mt-4 inline-flex items-center gap-2 text-brand-600 font-semibold">Learn More <i class="fa-solid fa-arrow-right"></i></a>
+        </article>
+
+        <!-- Food Aid -->
+        <article class="rounded-3xl bg-white p-6 shadow-soft transition hover:-translate-y-1 hover:shadow-xl" data-aos="fade-up" data-aos-delay="120">
+          <img class="h-44 w-full rounded-2xl object-cover" src="http://www.asegedechaged.com/wp-content/uploads/2019/12/foodsmall.jpg" alt="Meals" />
+          <h3 class="mt-4 font-semibold text-lg">Food Aid</h3>
+          <p class="mt-2 text-sm text-slate-600">
+            The food aid program provides <span class="font-semibold">three meals per day</span> for <span class="font-semibold">91 residents</span>
+            (66 male and 25 female) and an additional <span class="font-semibold">20 elders</span> (17 male and 3 female) living outside the facility.
+          </p>
+          <a href="services.html#food" class="mt-4 inline-flex items-center gap-2 text-brand-600 font-semibold">Learn More <i class="fa-solid fa-arrow-right"></i></a>
+        </article>
+
+        <!-- Medical Aid -->
+        <article class="rounded-3xl bg-white p-6 shadow-soft transition hover:-translate-y-1 hover:shadow-xl" data-aos="fade-up" data-aos-delay="190">
+          <img class="h-44 w-full rounded-2xl object-cover" src="http://www.asegedechaged.com/wp-content/uploads/2019/12/home-12.jpg" alt="Health" />
+          <h3 class="mt-4 font-semibold text-lg">Medical Aid</h3>
+          <p class="mt-2 text-sm text-slate-600">
+            There are <span class="font-semibold">91 elders</span> (25 female and 66 male) benefiting from the health program of Asegedech Asfaw AARO.
+          </p>
+          <a href="services.html#medical" class="mt-4 inline-flex items-center gap-2 text-brand-600 font-semibold">Learn More <i class="fa-solid fa-arrow-right"></i></a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= IMPACT / STATS ================= -->
+  <section id="impact" class="relative bg-white py-16 md:py-24">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="grid gap-8 md:grid-cols-2 items-center">
+        <div class="order-2 md:order-1" data-aos="fade-up">
+          <h2 class="font-display text-3xl md:text-4xl font-extrabold">Our Impact in Numbers</h2>
+          <p class="mt-3 text-slate-600">These numbers represent real people whose lives are brighter because of your support.</p>
+          <div class="mt-6 grid grid-cols-2 gap-4">
+            <div class="rounded-2xl bg-slate-50 p-5 shadow-soft" data-counter="91">
+              <p class="text-4xl font-extrabold text-brand-600"><span class="count">0</span>+</p>
+              <p class="mt-1 text-sm text-slate-600">Elders in full-time care</p>
+            </div>
+            <div class="rounded-2xl bg-slate-50 p-5 shadow-soft" data-counter="20">
+              <p class="text-4xl font-extrabold text-brand-600"><span class="count">0</span>+</p>
+              <p class="mt-1 text-sm text-slate-600">Community beneficiaries</p>
+            </div>
+            <div class="rounded-2xl bg-slate-50 p-5 shadow-soft" data-counter="3">
+              <p class="text-4xl font-extrabold text-brand-600"><span class="count">0</span></p>
+              <p class="mt-1 text-sm text-slate-600">Meals daily</p>
+            </div>
+            <div class="rounded-2xl bg-slate-50 p-5 shadow-soft" data-counter="24">
+              <p class="text-4xl font-extrabold text-brand-600"><span class="count">0</span>/7</p>
+              <p class="mt-1 text-sm text-slate-600">Care & support</p>
+            </div>
+          </div>
+        </div>
+        <div class="order-1 md:order-2" data-aos="fade-left">
+          <div class="relative aspect-[4/3] overflow-hidden rounded-3xl shadow-soft">
+            <img src="oldage.jpg" alt="Resident with caregiver" class="h-full w-full object-cover" />
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= GALLERY ================= -->
+  <section id="gallery" class="bg-slate-50 py-16 md:py-24">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="mx-auto max-w-2xl text-center" data-aos="fade-up">
+        <h2 class="font-display text-3xl md:text-4xl font-extrabold">Moments of Joy</h2>
+        <p class="mt-3 text-slate-600">Snapshots from daily life—friendship, music, prayer, and laughter.</p>
+      </div>
+      <div class="mt-10 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+        <img class="h-64 w-full rounded-2xl object-cover shadow-soft" data-aos="zoom-in" src="http://www.asegedechaged.com/wp-content/uploads/2019/12/cattle-1024x594.jpg" alt="gallery cattle" />
+        <img class="h-64 w-full rounded-2xl object-cover shadow-soft" data-aos="zoom-in" src="http://www.asegedechaged.com/wp-content/uploads/2019/12/Doctrate-773x1024.jpg" alt="gallery doctorate" />
+        <img class="h-64 w-full rounded-2xl object-cover shadow-soft" data-aos="zoom-in" src="http://www.asegedechaged.com/wp-content/uploads/2019/12/doctrate2-1024x683.jpg" alt="gallery doctorate 2" />
+        <img class="h-64 w-full rounded-2xl object-cover shadow-soft" data-aos="zoom-in" src="http://www.asegedechaged.com/wp-content/uploads/2019/12/boardgame-1024x656.jpg" alt="gallery boardgame" />
+        <img class="h-64 w-full rounded-2xl object-cover shadow-soft" data-aos="zoom-in" src="http://www.asegedechaged.com/wp-content/uploads/2019/12/gardening-1024x683.jpg" alt="gallery gardening" />
+        <img class="h-64 w-full rounded-2xl object-cover shadow-soft" data-aos="zoom-in" src="http://www.asegedechaged.com/wp-content/uploads/2019/12/meal-1024x683.jpg" alt="gallery meal" />
+        <img class="h-64 w-full rounded-2xl object-cover shadow-soft" data-aos="zoom-in" src="http://www.asegedechaged.com/wp-content/uploads/2019/12/farm-1024x427.jpg" alt="gallery farm" />
+        <img class="h-64 w-full rounded-2xl object-cover shadow-soft" data-aos="zoom-in" src="http://www.asegedechaged.com/wp-content/uploads/2019/12/meetiing-1024x683.jpg" alt="gallery meeting" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CTA: DONATE & VOLUNTEER ================= -->
+  <section id="donate" class="relative overflow-hidden py-16 md:py-24">
+    <div class="absolute inset-0 -z-10 bg-gradient-to-br from-brand-50 via-white to-brand-100"></div>
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="grid gap-8 md:grid-cols-2 items-center">
+        <div class="rounded-3xl bg-white p-8 shadow-soft" data-aos="fade-right">
+          <div class="inline-flex items-center gap-2 rounded-full bg-brand-100 px-3 py-1 text-brand-700">
+            <i class="fa-solid fa-heart"></i><span class="text-sm font-semibold">Make a Difference</span>
+          </div>
+          <h3 class="mt-3 font-display text-2xl md:text-3xl font-extrabold">Your gift keeps a grandmother warm tonight.</h3>
+          <p class="mt-3 text-slate-600">Donate via Telebirr: <span class="font-semibold">09xx xxx xxx</span> or use our form on the Donate page.</p>
+          <a href="Donate.html" class="mt-5 inline-flex items-center gap-2 rounded-full bg-brand-500 px-5 py-3 text-white shadow-soft hover:bg-brand-600">
+            Donate Securely<i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+        <div id="volunteer" class="rounded-3xl bg-white p-8 shadow-soft" data-aos="fade-left">
+          <div class="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-slate-700">
+            <i class="fa-solid fa-people-carry-box"></i><span class="text-sm font-semibold">Give Your Time</span>
+          </div>
+          <h3 class="mt-3 font-display text-2xl md:text-3xl font-extrabold">Spend a morning with us—read, chat, sing, and smile.</h3>
+          <p class="mt-3 text-slate-600">We welcome nurses, cooks, drivers, and friendly companions. Flexible hours.</p>
+          <a href="Volunteer.html" class="mt-5 inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-3 text-white shadow-soft hover:bg-slate-800">
+            See Volunteer Tasks<i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CONTACT ================= -->
+  <section id="contact" class="bg-white py-16 md:py-24">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="grid gap-8 md:grid-cols-2 items-start">
+        <div data-aos="fade-up">
+          <h2 class="font-display text-3xl md:text-4xl font-extrabold">Get in Touch</h2>
+          <p class="mt-3 text-slate-600">We’ll reply within 1–2 business days.</p>
+          <form class="mt-6 grid gap-4">
+            <input class="rounded-2xl border border-slate-200 px-4 py-3 shadow-soft focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="Full name" required />
+            <input class="rounded-2xl border border-slate-200 px-4 py-3 shadow-soft focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="Email address" type="email" required />
+            <textarea class="min-h-[120px] rounded-2xl border border-slate-200 px-4 py-3 shadow-soft focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="Your message" required></textarea>
+            <button type="submit" class="inline-flex w-max items-center gap-2 rounded-full bg-brand-500 px-6 py-3 font-semibold text-white hover:bg-brand-600 shadow-soft">
+              Send Message<i class="fa-solid fa-paper-plane"></i>
+            </button>
+          </form>
+        </div>
+        <div data-aos="fade-left" class="rounded-3xl bg-slate-50 p-6 shadow-soft">
+          <h3 class="font-semibold text-lg">Visit Us</h3>
+          <p class="mt-1 text-slate-600">Sami Recreation Center, Dire Dawa, Ethiopia</p>
+          <div class="mt-4 overflow-hidden rounded-2xl">
+            <iframe title="Map" src="https://www.google.com/maps?q=Sami%20Recreation%20Center%20Dire%20Dawa%20Ethiopia&output=embed&hl=en&z=14" class="h-64 w-full border-0"></iframe>
+          </div>
+          <div class="mt-6 grid grid-cols-2 gap-4 text-sm">
+            <div class="rounded-2xl bg-white p-4 shadow-soft"><p class="font-semibold">Phone</p><p class="text-slate-600">+251 991 586 162</p></div>
+            <div class="rounded-2xl bg-white p-4 shadow-soft"><p class="font-semibold">Email</p><p class="text-slate-600">contact@asegedechaged.com</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="border-t border-slate-200 bg-white py-10">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <p class="text-sm text-slate-600">© <span id="year"></span> Aged Care & Dignity Center. All rights reserved.</p>
+        <div class="flex items-center gap-3 text-lg">
+          <a class="hover:text-brand-600" href="https://facebook.com" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+          <a class="hover:text-brand-600" href="https://instagram.com" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    AOS.init({ once: true, duration: 700, easing: 'ease-out-cubic' });
+
+    // Mobile nav
+    const btn = document.getElementById('mobileBtn');
+    const menu = document.getElementById('mobileMenu');
+    btn && btn.addEventListener('click', () => menu.classList.toggle('hidden'));
+
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Counter animation when in view
+    const counters = document.querySelectorAll('[data-counter]');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target; const target = +el.getAttribute('data-counter');
+        const numEl = el.querySelector('.count');
+        let cur = 0; const step = Math.max(1, Math.round(target / 60));
+        const tick = () => {
+          cur += step; if (cur >= target) { cur = target; }
+          numEl.textContent = cur; if (cur < target) requestAnimationFrame(tick);
+        }; requestAnimationFrame(tick);
+        io.unobserve(el);
+      });
+    }, { threshold: 0.5 });
+    counters.forEach(c => io.observe(c));
+  </script>
+
+  <!-- Admin link — bullet-proof redirect (works for file:/// and http(s)://) -->
+  <script>
+    (function ensureAdminNavWorks(){
+      function computeAdminURL() {
+        const isHttp = location.protocol === 'http:' || location.protocol === 'https:';
+        if (isHttp) return location.origin + '/admin_tasks.html';
+        // file:// — build a URL in the same folder as index.html
+        const base = location.href.replace(/[#?].*$/,'');   // strip hash/query
+        return base.replace(/[^/]*$/, '') + 'admin_tasks.html';
+      }
+      const adminURL = computeAdminURL();
+      document.querySelectorAll('#adminLink, #adminLinkMobile').forEach(a=>{
+        a.setAttribute('href', adminURL);
+        a.addEventListener('click', (e)=>{ e.preventDefault(); location.assign(adminURL); });
+      });
+    })();
+  </script>
+
+  <!-- i18n -->
+  <script>
+    const I18N = {
+      en: {
+        "nav.services":"Services","nav.impact":"Impact","nav.gallery":"Gallery","nav.volunteer":"Volunteer","nav.contact":"Contact","nav.donate":"Donate",
+        "cta.swipe":"Swipe to pay","cta.error":"Please enter information",
+        "form.phone":"Telebirr Number","form.amount":"Donation Amount (ETB)",
+        "offline.prefix":"Prefer offline? Telebirr:",
+        "thanks":"🎉 Thank you! We’ll confirm via your phone shortly."
+      },
+      am: {
+        "nav.services":"አገልግሎቶች","nav.impact":"ተፅዕኖ","nav.gallery":"ጋለሪ","nav.volunteer":"በፈቃድ ሥራ","nav.contact":"እውቂያ","nav.donate":"መለገስ",
+        "cta.swipe":"ለመክፈል ይስስሩ","cta.error":"እባክዎ መረጃ ያስገቡ",
+        "form.phone":"ቴሌቢር ቁጥር","form.amount":"የመለገስ መጠን (ብር)",
+        "offline.prefix":"በመስመር ውጭ? ቴሌቢር:",
+        "thanks":"🎉 እናመሰግናለን! በስልክዎ በቅርብ ጊዜ እናሳውቀዎታለን።"
+      }
+    };
+
+    const langBtn  = document.getElementById('langBtn');
+    const langMenu = document.getElementById('langMenu');
+    const langLabel= document.getElementById('langLabel');
+
+    const saved = localStorage.getItem('lang') || 'en';
+    setLang(saved);
+
+    langBtn?.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      langMenu.classList.toggle('hidden');
+    });
+    document.addEventListener('click', ()=> langMenu.classList.add('hidden'));
+
+    langMenu?.querySelectorAll('[data-lang]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const code = btn.getAttribute('data-lang');
+        setLang(code);
+        localStorage.setItem('lang', code);
+        langMenu.classList.add('hidden');
+      });
+    });
+
+    function setLang(code){
+      const dict = I18N[code] || I18N.en;
+      document.documentElement.lang = code === 'am' ? 'am' : 'en';
+      langLabel.textContent = code.toUpperCase();
+
+      document.querySelectorAll('[data-i18n]').forEach(el=>{
+        const key = el.getAttribute('data-i18n');
+        if(dict[key] !== undefined){
+          const icon = el.querySelector('i');
+          el.textContent = dict[key];
+          if(icon) el.prepend(icon, ' ');
+        }
+      });
+    }
+  </script>
+</body>
+</html>
