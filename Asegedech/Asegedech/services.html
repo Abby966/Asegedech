@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Our Services – Aged Care & Dignity Center</title>
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { brand: { 50:'#fff7ed',100:'#ffedd5',200:'#fed7aa',300:'#fdba74',400:'#fb923c',500:'#f97316',600:'#ea580c',700:'#c2410c',800:'#9a3412',900:'#7c2d12'}},
+          fontFamily: { display:['"Segoe UI"','Inter','system-ui','sans-serif'], body:['Inter','system-ui','sans-serif']},
+          boxShadow: { soft: '0 10px 30px rgb(2 6 23 / 0.06)'}
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <style>
+    .glass { backdrop-filter: blur(10px); background: rgba(255,255,255,.86); }
+    html{scroll-behavior:smooth}
+  </style>
+</head>
+<body class="font-body text-slate-800 bg-slate-50">
+  <!-- NAV -->
+  <header class="sticky top-0 z-50 bg-transparent">
+    <nav class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="mt-4 mb-3 flex items-center justify-between rounded-2xl bg-white/90 glass shadow-soft px-4 py-2">
+        <a href="index.html#home" class="flex items-center gap-3"><span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500 text-white shadow-soft"><i class="fa-solid fa-hands-holding-heart"></i></span><span class="font-semibold tracking-tight">Aged Care & Dignity Center</span></a>
+        <div class="hidden md:flex items-center gap-6 text-sm">
+          <a class="hover:text-brand-600" href="index.html#services">Home</a>
+          <a class="hover:text-brand-600" href="#shelter">Shelter</a>
+          <a class="hover:text-brand-600" href="#food">Food</a>
+          <a class="hover:text-brand-600" href="#medical">Medical</a>
+          <a class="rounded-full bg-brand-500 px-4 py-2 text-white hover:bg-brand-600 shadow-soft" href="Donate.html">Donate</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="relative isolate overflow-hidden">
+    <div class="absolute inset-0 -z-10 bg-gradient-to-br from-brand-50 via-white to-brand-100"></div>
+    <div class="mx-auto max-w-7xl px-6 py-16 md:py-24">
+      <p class="text-xs font-semibold uppercase tracking-widest text-brand-600" data-aos="fade-up">Our Services</p>
+      <h1 class="mt-2 text-3xl md:text-5xl font-extrabold font-display" data-aos="fade-up" data-aos-delay="80">Care that protects dignity, health, and belonging.</h1>
+      <p class="mt-4 max-w-3xl text-slate-600" data-aos="fade-up" data-aos-delay="120">Below you’ll find details for each program. These sections match the <em>Learn More</em> links from the homepage.</p>
+      <div class="mt-6 flex items-center gap-3" data-aos="fade-up" data-aos-delay="160">
+        <a href="#shelter" class="rounded-full bg-white px-4 py-2 ring-1 ring-slate-200 hover:bg-slate-50">Shelter</a>
+        <a href="#food" class="rounded-full bg-white px-4 py-2 ring-1 ring-slate-200 hover:bg-slate-50">Food</a>
+        <a href="#medical" class="rounded-full bg-white px-4 py-2 ring-1 ring-slate-200 hover:bg-slate-50">Medical</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION: SHELTER -->
+  <section id="shelter" class="py-14 md:py-20">
+    <div class="mx-auto max-w-7xl px-6 grid gap-8 md:grid-cols-2 items-center">
+      <div data-aos="fade-right">
+        <div class="inline-flex items-center gap-2 rounded-full bg-brand-100 px-3 py-1 text-brand-700 text-sm font-semibold"><i class="fa-solid fa-house-chimney"></i> Shelter Aid</div>
+        <h2 class="mt-3 text-2xl md:text-4xl font-extrabold font-display">Safe shelter & clothing support</h2>
+        <p class="mt-3 text-slate-600">In our facility <span class="font-semibold">91 elders</span> (<span class="font-medium">66 male</span> and <span class="font-medium">25 female</span>) receive full shelter and clothing aid. We also provide personal cleaning materials for dignity and comfort.</p>
+        <ul class="mt-4 space-y-2 text-slate-700">
+          <li class="flex gap-2"><i class="fa-solid fa-check mt-1 text-brand-600"></i> Clean rooms with warm bedding</li>
+          <li class="flex gap-2"><i class="fa-solid fa-check mt-1 text-brand-600"></i> Laundry, hygiene kits, and clothing</li>
+          <li class="flex gap-2"><i class="fa-solid fa-check mt-1 text-brand-600"></i> 24/7 on-site support and security</li>
+        </ul>
+      </div>
+      <div data-aos="fade-left">
+        <div class="rounded-3xl overflow-hidden shadow-soft">
+          <img class="w-full h-[360px] object-cover" src="http://www.asegedechaged.com/wp-content/uploads/2019/12/smallshelter.jpg" alt="Shelter" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION: FOOD -->
+  <section id="food" class="py-14 md:py-20 bg-white">
+    <div class="mx-auto max-w-7xl px-6 grid gap-8 md:grid-cols-2 items-center">
+      <div class="order-2 md:order-1" data-aos="fade-right">
+        <div class="inline-flex items-center gap-2 rounded-full bg-brand-100 px-3 py-1 text-brand-700 text-sm font-semibold"><i class="fa-solid fa-utensils"></i> Food Aid</div>
+        <h2 class="mt-3 text-2xl md:text-4xl font-extrabold font-display">Nutritious meals, every day</h2>
+        <p class="mt-3 text-slate-600">We provide <span class="font-semibold">three meals per day</span> for <span class="font-semibold">91 residents</span> (66 male and 25 female) and an additional <span class="font-semibold">20 elders</span> (17 male and 3 female) who live outside the facility.</p>
+        <ul class="mt-4 space-y-2 text-slate-700">
+          <li class="flex gap-2"><i class="fa-solid fa-check mt-1 text-brand-600"></i> Balanced menus tailored to health needs</li>
+          <li class="flex gap-2"><i class="fa-solid fa-check mt-1 text-brand-600"></i> Fresh ingredients and cultural dishes</li>
+          <li class="flex gap-2"><i class="fa-solid fa-check mt-1 text-brand-600"></i> Celebration meals for holidays and events</li>
+        </ul>
+      </div>
+      <div class="order-1 md:order-2" data-aos="fade-left">
+        <div class="rounded-3xl overflow-hidden shadow-soft">
+          <img class="w-full h-[360px] object-cover" src="http://www.asegedechaged.com/wp-content/uploads/2019/12/foodsmall.jpg" alt="Food" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION: MEDICAL -->
+  <section id="medical" class="py-14 md:py-20">
+    <div class="mx-auto max-w-7xl px-6 grid gap-8 md:grid-cols-2 items-center">
+      <div data-aos="fade-right">
+        <div class="inline-flex items-center gap-2 rounded-full bg-brand-100 px-3 py-1 text-brand-700 text-sm font-semibold"><i class="fa-solid fa-stethoscope"></i> Medical Aid</div>
+        <h2 class="mt-3 text-2xl md:text-4xl font-extrabold font-display">Health support & wellness</h2>
+        <p class="mt-3 text-slate-600">There are <span class="font-semibold">91 elders</span> (25 female and 66 male) benefiting from the health program of Asegedech Asfaw AARO. We coordinate checkups, medication, and referrals.</p>
+        <ul class="mt-4 space-y-2 text-slate-700">
+          <li class="flex gap-2"><i class="fa-solid fa-check mt-1 text-brand-600"></i> Regular vital checks & medication support</li>
+          <li class="flex gap-2"><i class="fa-solid fa-check mt-1 text-brand-600"></i> First aid & emergency response coordination</li>
+          <li class="flex gap-2"><i class="fa-solid fa-check mt-1 text-brand-600"></i> Light physiotherapy & recreation</li>
+        </ul>
+      </div>
+      <div data-aos="fade-left">
+        <div class="rounded-3xl overflow-hidden shadow-soft">
+          <img class="w-full h-[360px] object-cover" src="http://www.asegedechaged.com/wp-content/uploads/2019/12/home-12.jpg" alt="Medical" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ / ACCORDION -->
+  <section class="py-14 md:py-20 bg-slate-50">
+    <div class="mx-auto max-w-7xl px-6">
+      <h3 class="text-2xl md:text-3xl font-extrabold font-display" data-aos="fade-up">Common Questions</h3>
+      <div class="mt-6 divide-y divide-slate-200 rounded-2xl bg-white shadow-soft" data-aos="fade-up" data-aos-delay="80">
+        <details class="group p-5">
+          <summary class="flex cursor-pointer list-none items-center justify-between font-semibold">Who can receive services?<span class="ml-4 transition group-open:rotate-180"><i class="fa-solid fa-chevron-down"></i></span></summary>
+          <p class="mt-3 text-slate-600">Elders in need, prioritizing those without family or stable income. Intake is coordinated with local administrators and community leaders.</p>
+        </details>
+        <details class="group p-5">
+          <summary class="flex cursor-pointer list-none items-center justify-between font-semibold">How can I refer someone?<span class="ml-4 transition group-open:rotate-180"><i class="fa-solid fa-chevron-down"></i></span></summary>
+          <p class="mt-3 text-slate-600">Call us at <span class="font-semibold">+251 991 586 162</span> or email <span class="font-semibold">contact@asegedechaged.com</span> with basic details; we’ll schedule an assessment.</p>
+        </details>
+        <details class="group p-5">
+          <summary class="flex cursor-pointer list-none items-center justify-between font-semibold">Can I volunteer?<span class="ml-4 transition group-open:rotate-180"><i class="fa-solid fa-chevron-down"></i></span></summary>
+          <p class="mt-3 text-slate-600">Yes! Visit the volunteer page to see current tasks (companionship, cooking, transport) and available hours.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-16 md:py-24">
+    <div class="mx-auto max-w-7xl px-6 grid gap-6 md:grid-cols-2 items-center">
+      <div class="rounded-3xl bg-white p-8 shadow-soft" data-aos="fade-right">
+        <h4 class="text-xl md:text-2xl font-extrabold font-display">Donate to keep an elder warm tonight</h4>
+        <p class="mt-2 text-slate-600">Telebirr: <span class="font-semibold">09xx xxx xxx</span>. You can also donate securely online.</p>
+        <a href="Donate.html" class="mt-4 inline-flex items-center gap-2 rounded-full bg-brand-500 px-5 py-3 text-white hover:bg-brand-600 shadow-soft">Donate Now <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+      <div class="rounded-3xl bg-slate-900 p-8 text-white shadow-soft" data-aos="fade-left">
+        <h4 class="text-xl md:text-2xl font-extrabold font-display">Volunteer for a morning of joy</h4>
+        <p class="mt-2 text-slate-200">Read, chat, sing, and share time with residents. Flexible schedules, groups welcome.</p>
+        <a href="Volunteer.html" class="mt-4 inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-slate-900 hover:bg-slate-100 shadow-soft">See Volunteer Tasks <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-200 bg-white py-10">
+    <div class="mx-auto max-w-7xl px-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <p class="text-sm text-slate-600">© <span id="year"></span> Aged Care & Dignity Center.</p>
+      <div class="flex items-center gap-3 text-lg">
+        <a class="hover:text-brand-600" href="https://facebook.com" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+        <a class="hover:text-brand-600" href="https://instagram.com" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    AOS.init({ once:true, duration:700, easing:'ease-out-cubic' });
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

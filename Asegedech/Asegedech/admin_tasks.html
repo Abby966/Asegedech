@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin – Manage Volunteer Tasks</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root{--brand:#f97316}
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    .pill{border-radius:999px}
+    .shadow-soft{box-shadow:0 12px 30px rgba(2,6,23,.08)}
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+  <!-- Top Nav -->
+  <header id="adminNav" class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-slate-200">
+    <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
+      <h1 class="text-lg font-bold">Aged Care & Dignity – Admin</h1>
+      <div class="flex items-center gap-2">
+        <a href="/index.html" class="pill px-3 py-1.5 border border-slate-200 hover:bg-slate-50">Home</a>
+        <button id="logoutBtn" class="pill px-3 py-1.5 bg-slate-900 text-white hover:opacity-90">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="adminMain" class="mx-auto max-w-6xl px-4 py-6">
+    <div class="grid md:grid-cols-3 gap-6 items-start">
+      <!-- Create/Update Task -->
+      <section class="md:col-span-2">
+        <div class="rounded-2xl bg-white p-5 shadow-soft">
+          <h2 class="text-xl font-bold mb-1">Create / Edit Task</h2>
+          <p class="text-slate-500 mb-4">Define a task volunteers can book. Capacity limits how many bookings per exact time slot.</p>
+          <form id="taskForm" class="grid gap-3" novalidate>
+            <input type="hidden" id="editingId" />
+            <label class="text-sm font-semibold">Title</label>
+            <input id="title" class="rounded-xl border border-slate-200 px-3 py-2" placeholder="e.g., Cleaning, Celebrating Holiday" required>
+
+            <label class="text-sm font-semibold">Description</label>
+            <textarea id="desc" class="rounded-xl border border-slate-200 px-3 py-2" rows="3" placeholder="Optional details"></textarea>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-sm font-semibold">Max Volunteers (per slot)</label>
+                <input id="capacity" type="number" min="1" class="rounded-xl border border-slate-200 px-3 py-2" placeholder="e.g., 1 or 5" />
+              </div>
+              <div>
+                <label class="text-sm font-semibold">Slot Duration (mins)</label>
+                <input id="duration" type="number" min="5" class="rounded-xl border border-slate-200 px-3 py-2" placeholder="60" value="60" />
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 mt-2">
+              <button class="pill px-4 py-2 text-white font-semibold" style="background:var(--brand)">Save Task</button>
+              <button type="button" id="resetForm" class="pill px-4 py-2 border border-slate-200">Reset</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Current Tasks -->
+        <section class="mt-6 rounded-2xl bg-white p-5 shadow-soft">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold">Current Tasks</h2>
+            <button id="refreshTasksBtn" class="pill border border-slate-200 px-3 py-2 hover:bg-slate-50">Refresh</button>
+          </div>
+          <div id="taskList" class="mt-4 grid gap-3"></div>
+        </section>
+      </section>
+
+      <!-- Notifications / Recent Appointments (read-only) -->
+      <aside class="md:col-span-1 sticky top-20">
+        <div class="rounded-2xl bg-white p-5 shadow-soft">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold">Recent Appointments</h2>
+            <button id="refreshNotificationsBtn" class="pill border border-slate-200 px-3 py-2 hover:bg-slate-50">Refresh</button>
+          </div>
+          <div id="notificationList" class="mt-4 grid gap-3"></div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    const $ = (s, r=document) => r.querySelector(s);
+
+    async function getMe(){
+      try { const r = await fetch('/api/me', {credentials:'include'}); return await r.json(); }
+      catch { return { ok:false }; }
+    }
+
+    function taskCard(t){
+      return `<article class="rounded-2xl border border-slate-200 bg-white p-4">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h3 class="text-lg font-bold">${t.title}</h3>
+            <p class="text-slate-600 text-sm">${t.description || ''}</p>
+            <p class="text-slate-500 text-xs">Capacity/slot: ${t.maxVolunteers ?? '—'} • Duration: ${t.slotDurationMins ?? 60}m</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button class="pill px-3 py-1 border border-slate-200 hover:bg-slate-50" data-edit='${JSON.stringify(t)}'>Edit</button>
+            <button class="pill px-3 py-1 bg-red-50 text-red-700 hover:bg-red-100" data-del="${t.id}">Delete</button>
+          </div>
+        </div>
+      </article>`;
+    }
+
+    async function loadTasks(){
+      const wrap = $('#taskList');
+      wrap.innerHTML = '<div class="text-slate-500">Loading…</div>';
+      const r = await fetch('/api/admin/tasks', {credentials:'include'});
+      if(r.status === 401){ window.location.href = '/admin_login.html'; return; }
+      if(!r.ok){ wrap.innerHTML = '<div class="text-red-600">Failed to load tasks.</div>'; return; }
+      const items = await r.json();
+      wrap.innerHTML = items.length ? items.map(taskCard).join('') : '<div class="text-slate-500">No tasks yet.</div>';
+    }
+
+    function apptCard(a){
+      const when = new Date(a.created_at).toLocaleString();
+      return `<article class="rounded-xl border border-slate-200 p-3 bg-slate-50">
+        <div class="font-bold">${a.task_title}</div>
+        <div class="text-sm text-slate-600"><strong>Date:</strong> ${a.date} • <strong>Time:</strong> ${a.start_time} – ${a.end_time}</div>
+        <div class="text-sm text-slate-600"><strong>Volunteer:</strong> ${a.name ? a.name + ' — ' : ''}${a.phone}</div>
+        <div class="text-xs text-slate-400 mt-1">Booked on: ${when}</div>
+      </article>`;
+    }
+
+    async function loadNotifications(){
+      const box = $('#notificationList');
+      box.innerHTML = '<div class="text-slate-500">Loading…</div>';
+      const r = await fetch('/api/admin/appointments', {credentials:'include'});
+      if(r.status === 401){ window.location.href = '/admin_login.html'; return; }
+      if(!r.ok){ box.innerHTML = '<div class="text-red-600">Failed to load.</div>'; return; }
+      const items = await r.json();
+      box.innerHTML = items.length ? items.map(apptCard).join('') : '<div class="text-slate-500">No appointments yet.</div>';
+    }
+
+    function resetForm(){ $('#taskForm').reset(); $('#editingId').value=''; }
+    document.getElementById('resetForm').addEventListener('click', resetForm);
+
+    document.getElementById('taskForm').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const id = $('#editingId').value.trim();
+      const title = $('#title').value.trim();
+      if(!title){ $('#title').focus(); return; }
+      const payload = {
+        id: id || null,
+        title,
+        description: $('#desc').value.trim(),
+        capacity: $('#capacity').value ? Number($('#capacity').value) : null,
+        duration: $('#duration').value ? Number($('#duration').value) : 60,
+      };
+      const r = await fetch('/api/admin/task', {
+        method:'POST', credentials:'include',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      if(r.status === 401){ window.location.href = '/admin_login.html'; return; }
+      if(!r.ok){ alert('Save failed'); return; }
+      resetForm();
+      loadTasks();
+    });
+
+    document.addEventListener('click', async (e)=>{
+      const editBtn = e.target.closest('[data-edit]');
+      const delBtn  = e.target.closest('[data-del]');
+      if(editBtn){
+        const t = JSON.parse(editBtn.dataset.edit);
+        $('#editingId').value = t.id;
+        $('#title').value = t.title;
+        $('#desc').value = t.description || '';
+        $('#capacity').value = (t.maxVolunteers ?? '').toString();
+        $('#duration').value = (t.slotDurationMins ?? 60).toString();
+        window.scrollTo({top:0, behavior:'smooth'});
+      }
+      if(delBtn){
+        const id = delBtn.dataset.del;
+        if(confirm('Delete this task?')){
+          const r = await fetch(`/api/admin/task/${id}`, {method:'DELETE', credentials:'include'});
+          if(r.status === 401){ window.location.href = '/admin_login.html'; return; }
+          if(r.ok){ loadTasks(); }
+        }
+      }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async ()=>{
+      try{ await fetch('/api/logout', {method:'POST', credentials:'include'}); }catch{}
+      window.location.href = '/admin_login.html';
+    });
+
+    // Boot: require login
+    (async function init(){
+      const me = await getMe();
+      if(!me || me.ok !== true){ window.location.href = '/admin_login.html'; return; }
+      await Promise.all([loadTasks(), loadNotifications()]);
+    })();
+  </script>
+</body>
+</html>

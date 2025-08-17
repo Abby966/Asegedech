@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Login</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--brand:#f97316}
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    .shadow-soft{box-shadow:0 12px 30px rgba(2,6,23,.08)}
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+  <main class="min-h-screen grid place-items-center p-4">
+    <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-soft">
+      <h1 class="text-2xl font-extrabold mb-4">Admin Login</h1>
+      <form id="loginForm" class="grid gap-3" novalidate>
+        <label class="text-sm font-semibold" for="email">Email</label>
+        <input id="email" type="text" inputmode="email" autocomplete="username"
+               class="rounded-xl border border-slate-200 px-3 py-2" placeholder="admin" required>
+        <label class="text-sm font-semibold" for="password">Password</label>
+        <input id="password" type="password" autocomplete="current-password"
+               class="rounded-xl border border-slate-200 px-3 py-2" placeholder="admin" required>
+        <button class="mt-2 px-4 py-2 rounded-full text-white font-semibold" style="background:var(--brand)" type="submit">
+          Sign in
+        </button>
+        <p id="loginErr" class="hidden text-sm font-semibold text-red-600">Wrong email or password.</p>
+      </form>
+      <p class="text-sm text-slate-500 mt-4">
+        Default user: <span class="font-semibold">admin / admin</span>
+      </p>
+      <p class="text-sm mt-2">
+        <a class="text-blue-600 underline" href="/index.html">Back to Home</a>
+      </p>
+    </div>
+  </main>
+
+  <script>
+    const $ = (s, r=document)=>r.querySelector(s);
+    document.getElementById('loginForm').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const email = $('#email').value.trim();
+      const password = $('#password').value;
+      if(!email || !password) return;
+      try{
+        const r = await fetch('/api/login', {
+          method:'POST', credentials:'include',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({email, password})
+        });
+        if(r.ok){
+          $('#loginErr').classList.add('hidden');
+          window.location.href = '/admin_tasks.html';
+        }else{
+          $('#loginErr').textContent = 'Wrong email or password.';
+          $('#loginErr').classList.remove('hidden');
+        }
+      }catch{
+        $('#loginErr').textContent = 'Server unreachable. Make sure app.py is running.';
+        $('#loginErr').classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>
