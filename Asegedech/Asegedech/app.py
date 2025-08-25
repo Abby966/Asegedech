@@ -12,7 +12,29 @@ DB_PATH = os.environ.get("DB_PATH", os.path.join(APP_DIR, "appointments.db"))
 app = Flask(__name__, static_url_path="", static_folder=".")
 app.secret_key = os.environ.get("FLASK_SECRET", "super-secret-key")
 app.url_map.strict_slashes = False  # avoid 301->GET issues on POST routes
-CORS(app, supports_credentials=True)
+
+# --- Session + CORS fixes for cross-origin frontends ---
+# Set your frontend origin (e.g., http://localhost:5173 or https://your.site)
+FRONTEND_ORIGIN = os.environ.get("FRONTEND_ORIGIN", "http://localhost:5173")
+
+# Cross-site cookie configuration.
+# In production behind HTTPS, keep SESSION_COOKIE_SECURE=1 (default below).
+app.config.update(
+    SESSION_COOKIE_NAME="volunteer_admin",
+    SESSION_COOKIE_SAMESITE="None",  # required when frontend and backend are on different origins
+    SESSION_COOKIE_SECURE=bool(int(os.environ.get("SESSION_COOKIE_SECURE", "1"))),  # 1 in prod, 0 for local HTTP
+    SESSION_COOKIE_HTTPONLY=True,
+    PERMANENT_SESSION_LIFETIME=timedelta(days=7),
+)
+
+# CORS must allow credentials and the exact origin for cross-origin sessions to work.
+CORS(
+    app,
+    origins=[FRONTEND_ORIGIN],
+    supports_credentials=True,
+    methods=["GET", "POST", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"],
+)
 
 # --------------- DB helpers ---------------
 def get_db():
@@ -65,7 +87,6 @@ def init_db():
       FOREIGN KEY(task_id) REFERENCES tasks(id) ON DELETE CASCADE
     )""")
 
-    # (We will create the proper unique index in migrate_db)
     con.commit()
     con.close()
 
@@ -90,8 +111,7 @@ def migrate_db():
         cur.execute("ALTER TABLE tasks ADD COLUMN created_by_admin INTEGER DEFAULT 1")
         cur.execute("UPDATE tasks SET created_by_admin = 1 WHERE created_by_admin IS NULL")
 
-    # unique booking per (task, date) while active — use a partial unique index
-    # drop legacy index if it exists, then create partial unique index (SQLite >= 3.8)
+    # unique booking per (task, date) while active — partial unique index
     cur.execute("PRAGMA index_list('appointments')")
     idx_names = [r["name"] for r in cur.fetchall()]
     if "idx_appointments_task_date" in idx_names:
@@ -144,6 +164,8 @@ def api_login():
     if not row or not check_password_hash(row["password_hash"], password):
         return jsonify({"error": "Invalid credentials"}), 401
 
+    # Persist session cookie with cross-site settings
+    session.permanent = True
     session["admin_id"] = row["id"]
     session["admin_email"] = row["email"]
     return jsonify({"ok": True})
@@ -408,6 +430,7 @@ def dev_reset_admin():
     con.commit()
     con.close()
     return jsonify({"ok": True})
+
 # Always serve the login form
 @app.route("/admin_login.html", methods=["GET"])
 def serve_admin_login():
@@ -417,7 +440,6 @@ def serve_admin_login():
 @app.route("/admin_tasks.html", methods=["GET"])
 def serve_admin_tasks():
     if not require_admin():
-        # Not logged in → show the login page first
         return send_from_directory(APP_DIR, "admin_login.html")
     return send_from_directory(APP_DIR, "admin_tasks.html")
 
